@@ -134,31 +134,20 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 							accountId, profileId);
 
 					CreatePaymentResponseDTO createPaymentResponseDTO = response.as(CreatePaymentResponseDTO.class);
-
-					System.out.println(createPaymentResponseDTO.paymentId);
-					
-					Log.assertThat(createPaymentResponseDTO.paymentId!=null && !createPaymentResponseDTO.paymentId.isEmpty(), "Payment Id created successfully", "Payment id has not generated.");
-					
-					
-					if(createPaymentResponseDTO.paymentId!=null && !createPaymentResponseDTO.paymentId.isEmpty()) {
-						
-					
-					System.out.println(createPaymentResponseDTO.refId);
-					System.out.println(createPaymentResponseDTO.getTransactions().get(0).getPaymentMethodProviderId());
-
 					int actualResultStatusCode = response.statusCode();
 					Log.assertThat(actualResultStatusCode == 200,
 							"Create Payment for Ampurse executed successfully as code is return as 200.",
 							"Status Code is return as not 200 for create payment, Actual result : "
 									+ actualResultStatusCode);
-					String actualPaymentStatus = createPaymentResponseDTO.getStatus();
-
 					String transStatus = createPaymentResponseDTO.getTransactions().get(0).getStatus();
 
 					Log.assertThat(transStatus.equals("AUTHORIZED"),
 							"transaction Status is AUTHORIZED. for create payment.",
 							"Status is not AUTHORIZED, Actual result : " + transStatus);
-					}
+
+					Log.assertThat(
+							createPaymentResponseDTO.paymentId != null && !createPaymentResponseDTO.paymentId.isEmpty(),
+							"Payment Id created successfully", "Payment id has not generated.");
 
 				}
 
@@ -175,7 +164,7 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 	}
 
 	@Test(enabled = true, description = "Testcase to verify the create payement api for Credit Voucher", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
-	public void tcAmwayAPICreditVoucherCreatePayment(String refId, String refType, String currency, String amount,
+	public void tcAmwayAPICreditVoucherCreatePayment(String refType, String currency, String amount,
 			String paymentMethodProviderId, String paymentMethodCode, String entryType, String accountId,
 			String profileId) throws Exception {
 		boolean result = false;
@@ -221,12 +210,25 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 				}
 				// create payment
 				if (callStatus == 200) {
-					Response response = createPaymentUtilityObj.performWalletCreatePayment(refId, refType, currency,
-							Integer.parseInt(amount), paymentMethodProviderId, paymentMethodCode, entryType, accountId,
-							profileId);
+					String rfidCreate = String.valueOf(Utils.getRandom(1000, 100000));
+					Response response = createPaymentUtilityObj.performWalletCreatePayment(rfidCreate, refType,
+							currency, Integer.parseInt(amount), paymentMethodProviderId, paymentMethodCode, entryType,
+							accountId, profileId);
+					CreatePaymentResponseDTO createPaymentResponseDTO = response.as(CreatePaymentResponseDTO.class);
 					int actualResultStatusCode = response.statusCode();
-					Log.assertThat(actualResultStatusCode == 200, "Status code is return as 200.",
-							"Status Code is return as not 200, Actual result : " + actualResultStatusCode);
+					Log.assertThat(actualResultStatusCode == 200,
+							"Create Payment for Credit voucher executed successfully as code is return as 200.",
+							"Status Code is return as not 200 for create payment, Actual result : "
+									+ actualResultStatusCode);
+					String transStatus = createPaymentResponseDTO.getTransactions().get(0).getStatus();
+
+					Log.assertThat(transStatus.equals("AUTHORIZED"),
+							"transaction Status is AUTHORIZED. for create payment credit voucher",
+							"Status is not AUTHORIZED for credit voucher, Actual result : " + transStatus);
+
+					Log.assertThat(
+							createPaymentResponseDTO.paymentId != null && !createPaymentResponseDTO.paymentId.isEmpty(),
+							"Payment Id created successfully  for credit voucher", "Payment id has not generated for credit voucher.");
 
 				}
 

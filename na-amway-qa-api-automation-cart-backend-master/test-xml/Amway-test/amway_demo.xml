@@ -16,6 +16,7 @@
 				<methods>
 					<!--<include name="tcAmwayAPI_CreatePayment"/>-->
 					<include name="tcAmwayAPIAmpurseCreatePayment"/>
+					<include name="tcAmwayAPICreditVoucherCreatePayment"/>
 				</methods>
 			</class>
 		</classes>

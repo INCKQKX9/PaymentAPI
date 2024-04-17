@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Amway-API-Automation" verbose="3" parallel="tests"
+	thread-count="400">
+	<parameter name="deviceHost" value="localhost" />
+	<parameter name="devicePort" value="4444"></parameter>
+	<parameter name="browserName" value="chrome_Windows" />
+	<parameter name="configFile" value="env" />
+	<parameter name="environment" value="QA" />
+	
+	<parameter name="Website" value="https://global-dev.amcom-corp-preprod.amway.net/comamshopws#"></parameter>
+	<test name="Amway-API-Automation" thread-count="5" parallel="true">
+		<classes>
+			<class name="com.amway.testscripts.CreatePaymentAPITestCases">
+				<methods>
+					<!--<include name="tcAmwayAPI_CreatePayment"/>-->
+					<include name="tcAmwayAPIAmpurseCreatePayment"/>
+				</methods>
+			</class>
+		</classes>
+	</test>
+</suite>

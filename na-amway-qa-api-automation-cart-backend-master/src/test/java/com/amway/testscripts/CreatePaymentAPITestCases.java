@@ -1,49 +1,20 @@
 package com.amway.testscripts;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.json.simple.JSONObject;
-
-import org.testng.Assert;
-import org.testng.ITestContext;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import com.amway.support.TestDataExtractor;
 import com.amway.api.utilities.CreatePaymentUtility;
-import com.amway.pages.HomePage;
-import com.amway.pojo.payment.AmpurseRes;
-import com.amway.pojo.response.CreateCartResponseDTO;
 import com.amway.pojo.response.CreatePaymentResponseDTO;
-import com.amway.support.BrowserActions;
-import com.amway.support.CommonUtils;
 import com.amway.support.DataProviderUtils;
 import com.amway.support.EmailReport;
-import com.amway.support.EnvironmentPropertiesReader;
 import com.amway.support.Log;
 import com.amway.support.RestAssuredAPI;
-import com.amway.support.WebDriverFactory;
-import com.amway.tdata.TData.Payment;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.amway.support.Utils;
-import com.jayway.jsonpath.JsonPath;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
+import com.amway.tdata.TData.Payment;
 
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import net.minidev.json.JSONArray;
-import io.restassured.http.ContentType;
 
 @Listeners(EmailReport.class)
 public class CreatePaymentAPITestCases extends RestAssuredAPI {

@@ -181,18 +181,28 @@ public class RestAssuredAPI extends BaseTest {
 //	Content-Type:application/json
 
 	// Headers for Anonymous cart
-	public Map<String, String> setAnonyomousCartHeaders() {
+	public Map<String, String> setAnonyomousCartHeaders() throws Exception {
 		Map<String, String> headerMap = setHeaders();
 		headerMap.put("X-AMW-ANON-ID", prop.getProperty("anonymousAmwId"));
-		headerMap.put("X-Idempotency-Key", String.valueOf(Utils.getRandom(1000, 100000)));
+		try {
+			headerMap.put("X-Idempotency-Key", String.valueOf(Utils.getRandom(1000, 100000)));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return headerMap;
 	}
 
 	// Headers for Anonymous cart
-	public Map<String, String> setPaymentHeaders(Boolean isUseCookie) {
+	public Map<String, String> setPaymentHeaders(Boolean isUseCookie) throws Exception {
 		Map<String, String> headerMap = setHeaders();
 
-		headerMap.put("X-Idempotency-Key", String.valueOf(Utils.getRandom(1000, 100000)));
+		try {
+			headerMap.put("X-Idempotency-Key", String.valueOf(Utils.getRandom(1000, 100000)));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if (isUseCookie) {
 			headerMap.put("Cookie", cookie);
 		}

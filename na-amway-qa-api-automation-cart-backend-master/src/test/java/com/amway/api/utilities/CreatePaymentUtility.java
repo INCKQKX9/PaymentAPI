@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
+import com.amway.pojo.payment.AddAmpointsBalanceReq;
 import com.amway.pojo.payment.AddBalanceReq;
 import com.amway.pojo.payment.AddBalanceReq.Source;
 import com.amway.pojo.payment.CreatePaymentRequest;
@@ -28,16 +28,24 @@ public class CreatePaymentUtility extends RestAssuredAPI {
 	Response response = null;
 
 	public Response performCreatePayment(String refId, String refType, String currency, Integer value,
-			String paymentMethodProviderId, String paymentMethodCode, String entryType) {
+			String paymentMethodProviderId, String paymentMethodCode, String entryType,String accountId, String profileId) throws Exception {
 		String uri = getURI("createPayment");
-
+		Response response = null;
 		CreatePaymentRequest createPaymentDto = CreatePaymentRequest.builder().refId(refId).refType(refType)
 				.amount(Amount.builder().currency(currency).value(value).build())
+				.userInfo(UserInfo.builder().accountId(accountId).profileId(profileId).build())
 				.transactions(createTransaction(paymentMethodProviderId, paymentMethodCode, entryType, value)).build();
 		System.out.println(createPaymentDto.getTransactions());
-		RequestSpecificationDTO requestSpecificationDTO = createRequestSpecificationObject(uri, "POST",
-				setPaymentHeaders(false), createPaymentDto);
-		Response response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		RequestSpecificationDTO requestSpecificationDTO;
+		try {
+			requestSpecificationDTO = createRequestSpecificationObject(uri, "POST",
+					setPaymentHeaders(false), createPaymentDto);
+			 response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 
 		return response;
 	}
@@ -61,7 +69,7 @@ public class CreatePaymentUtility extends RestAssuredAPI {
 
 	public Response performWalletCreatePayment(String refId, String refType, String currency, Integer value,
 			String paymentMethodProviderId, String paymentMethodCode, String entryType, String acoountId,
-			String profileId) {
+			String profileId) throws Exception {
 		String uri = getURI("createPayment");
 
 		CreatePaymentRequest createPaymentDto = CreatePaymentRequest.builder().refId(refId).refType(refType)
@@ -69,29 +77,71 @@ public class CreatePaymentUtility extends RestAssuredAPI {
 				.userInfo(UserInfo.builder().accountId(acoountId).profileId(profileId).build())
 				.transactions(createTransaction(paymentMethodProviderId, paymentMethodCode, entryType, value)).build();
 
-		RequestSpecificationDTO requestSpecificationDTO = createRequestSpecificationObject(uri, "POST",
-				setPaymentHeaders(false), createPaymentDto);
-		Response response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		RequestSpecificationDTO requestSpecificationDTO;
+		Response response = null;
+		try {
+			requestSpecificationDTO = createRequestSpecificationObject(uri, "POST",
+					setPaymentHeaders(false), createPaymentDto);
+			response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 
 		return response;
 	}
 
-	public Response performGetBal(String accountId, String accountType) {
+	public Response performGetBal(String accountId, String accountType) throws Exception {
 		String uri = getURI("checkBal");
 		HashMap<String, String> qparam = new HashMap<String, String>();
 		qparam.put("accountId", accountId);
 		qparam.put("accountType", accountType);
 
 		RestAssuredAPI res = new RestAssuredAPI();
-		RequestSpecificationDTO requestSpecificationDTO = createRequestSpecificationObject(uri, "GET",
-				setPaymentHeaders(false), qparam);
-		Response response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		RequestSpecificationDTO requestSpecificationDTO;
+		Response response=null;
+		try {
+			requestSpecificationDTO = createRequestSpecificationObject(uri, "GET",
+					setPaymentHeaders(false), qparam);
+			response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 
 		return response;
 	}
+	
+	public Response performGetBalAmpoints(String accountId) throws Exception {
+		String uri = getURI("checkBalAmpoints");
+		HashMap<String, String> qparam = new HashMap<String, String>();
+		qparam.put("accountId", accountId);
+		
+
+		RestAssuredAPI res = new RestAssuredAPI();
+		RequestSpecificationDTO requestSpecificationDTO;
+	
+		Response response =null;
+		try {
+			requestSpecificationDTO = createRequestSpecificationObject(uri, "GET",
+					setPaymentHeaders(false), qparam);
+			 response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		return response;
+	}
+	
+	
+	
 
 	public Response performAddBalance(String accountId, String accountType, String currency, String entryType,
-			Integer amount, String rfId) throws ParseException {
+			Integer amount, String rfId) throws Exception {
 		String uri = getURI("addBal");
 
 		AddBalanceReq addBalanceDto = AddBalanceReq.builder().accountId(accountId).accountType(accountType)
@@ -100,9 +150,46 @@ public class CreatePaymentUtility extends RestAssuredAPI {
 
 		JSONArray jsonArrayData = new JSONArray();
 		jsonArrayData.add(addBalanceDto);
-		RequestSpecificationDTO requestSpecificationDTO = createRequestSpecificationObjectArray(uri, "POST",
-				setPaymentHeaders(false), jsonArrayData);
-		Response response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		RequestSpecificationDTO requestSpecificationDTO;
+		Response response=null;
+		try {
+			requestSpecificationDTO = createRequestSpecificationObjectArray(uri, "POST",
+					setPaymentHeaders(false), jsonArrayData);
+			response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		
+//		RequestSpecificationArrayDTO requestSpecificationArrayDTO = createRequestSpecificationObjectArray(uri, "POST",
+//				setPaymentHeaders(false), jsonArrayData);
+//		Response response = RestAssuredAPI.callAPI(requestSpecificationArrayDTO, null);
+
+		return response;
+	}
+	
+	public Response performAddBalanceAmpoints(String accountId,String entryType,
+			Integer points, String rfId) throws Exception {
+		String uri = getURI("addBalAmpoints");
+		HashMap<String, String> qparam = new HashMap<String, String>();
+		qparam.put("accountId", accountId);
+
+		AddAmpointsBalanceReq addAmpointsBalanceDto = AddAmpointsBalanceReq.builder().entryType(entryType).points(points)
+				.referenceId(rfId).build();
+
+		
+		RequestSpecificationDTO requestSpecificationDTO;
+		Response response=null;
+		try {
+			requestSpecificationDTO = createRequestSpecificationObject(uri, "POST",
+					setPaymentHeaders(false), qparam);
+			response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 		
 //		RequestSpecificationArrayDTO requestSpecificationArrayDTO = createRequestSpecificationObjectArray(uri, "POST",
 //				setPaymentHeaders(false), jsonArrayData);

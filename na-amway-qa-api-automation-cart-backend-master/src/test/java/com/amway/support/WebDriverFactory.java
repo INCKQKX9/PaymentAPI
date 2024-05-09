@@ -1,11 +1,13 @@
 package com.amway.support;
 
 import java.io.UnsupportedEncodingException;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +32,10 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.CapabilityType;
@@ -72,15 +77,16 @@ public class WebDriverFactory {
     static URL hubURL;
     static Proxy zapProxy = new Proxy();
 
-    static DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
-    static DesiredCapabilities firefoxCapabilities = DesiredCapabilities.firefox();
-    static DesiredCapabilities chromeCapabilities = DesiredCapabilities.chrome();
-    static DesiredCapabilities safariCapabilities = DesiredCapabilities.safari();
-    static DesiredCapabilities edgeCapabilities = DesiredCapabilities.edge();
+    static DesiredCapabilities ieCapabilities = new DesiredCapabilities();
+    static DesiredCapabilities firefoxCapabilities = new DesiredCapabilities();
+    static DesiredCapabilities chromeCapabilities = new DesiredCapabilities();
+    static DesiredCapabilities safariCapabilities =  new DesiredCapabilities();
+    static DesiredCapabilities edgeCapabilities =  new DesiredCapabilities();
     static DesiredCapabilities iOS_SimulatorCapabilities = new DesiredCapabilities();
     static DesiredCapabilities androidSimulatorCapabilities = new DesiredCapabilities();
-    static DesiredCapabilities iOSDeviceCapabilities = DesiredCapabilities.iphone();
+    static DesiredCapabilities iOSDeviceCapabilities = new DesiredCapabilities();
     static ChromeOptions opt = new ChromeOptions();
+    static FirefoxOptions option1 = new FirefoxOptions();
     static FirefoxProfile fp = new FirefoxProfile();
     public static ExpectedCondition<Boolean> documentLoad;
     public static ExpectedCondition<Boolean> framesLoad;
@@ -179,8 +185,12 @@ public class WebDriverFactory {
             maxPageLoadWait = configProperty.getProperty("maxPageLoadWait") != null
                     ? Integer.valueOf(configProperty.getProperty("maxPageLoadWait"))
                     : maxPageLoadWait;
-
+            WebDriverManager.chromedriver().setup();
+            WebDriverManager.firefoxdriver().setup();
+            WebDriverManager.iedriver().setup();
+            WebDriverManager.safaridriver().setup();
             opt.addArguments("--ignore-certificate-errors");
+            opt.addArguments("incognito");
             opt.addArguments("--disable-bundled-ppapi-flash");
             opt.addArguments("--disable-extensions");
             opt.addArguments("--disable-web-security");
@@ -188,7 +198,7 @@ public class WebDriverFactory {
             opt.addArguments("--allow-running-insecure-content");
             opt.addArguments("--test-type");
             opt.addArguments("--enable-npapi");
-            chromeCapabilities.setCapability(CapabilityType.TAKES_SCREENSHOT, true);
+            //opt.setCapability(CapabilityType.TAKES_SCREENSHOT, true);
 
             try {
                 hubURL = new URL("http://" + driverHost + ":" + driverPort + "/wd/hub");
@@ -224,6 +234,7 @@ public class WebDriverFactory {
         // if(configProperty.getProperty("runMobileApp").equals("true"))
         // return AppiumDriverFactory.get();
         // else
+    	
         return get(browserSetup, null);
     }
 
@@ -238,7 +249,8 @@ public class WebDriverFactory {
      * @return driver - WebDriver Instance
      * @throws MalformedURLException
      */
-    public static WebDriver get(String browserWithPlatform, Proxy proxy) throws MalformedURLException {
+    @SuppressWarnings("deprecation")
+	public static WebDriver get(String browserWithPlatform, Proxy proxy) throws MalformedURLException {
         String browser = null;
         String platform = null;
         String browserVersion = null;
@@ -370,6 +382,8 @@ public class WebDriverFactory {
         if (browserWithPlatform.contains("_")) {
             browser = browserWithPlatform.split("_")[0].toLowerCase().trim();
             platform = browserWithPlatform.split("_")[1].toUpperCase().trim();
+            System.out.println("browser--->"+browser);
+            System.out.println("platform--->"+platform);
         } else {
             platform = "ANY";
         }
@@ -396,13 +410,36 @@ public class WebDriverFactory {
                     prefs.put("credentials_enable_service", false);
                     prefs.put("profile.password_manager_enabled", false);
                     opt.setExperimentalOption("prefs", prefs);
-
-                    chromeCapabilities.setCapability(ChromeOptions.CAPABILITY, opt);
+                    if(platform != "windows")
+                    {
+                    	System.out.print("Entering into the block");
+                    	opt.addArguments("--no-sandbox");
+                    	//opt.addArguments("--remote-debugging-port=9222");
+                    	//opt.addArguments("--headless=new");                    	
+                    	//opt.addArguments("--disable-gpu");
+                    	//opt.addArguments("start-maximized"); // open Browser in maximized mode
+                    	//opt.addArguments("disable-infobars"); // disabling infobars
+                    	//opt.addArguments("--disable-extensions"); // disabling extensions
+                    	//opt.addArguments("--disable-gpu"); // applicable to windows os only
+                    	opt.addArguments("--disable-dev-shm-usage"); 
+                    	// overcome limited resource problems
+                    	opt.addArguments("window-size=1920,1080");
+                    	opt.addArguments("start-maximized");
+                    	opt.addArguments("--proxy-server='direct://'");
+                    	opt.addArguments("--proxy-bypass-list=*");
+                    	opt.addArguments("--remote-allow-origins=*");
+                    	opt.addArguments("--disable-web-security");
+         
+                    }
+					chromeCapabilities.setCapability(ChromeOptions.CAPABILITY, opt);
                     chromeCapabilities.setPlatform(Platform.fromString(platform));
+                    
+                    System.out.print("Platform Cabalities"+ chromeCapabilities.getPlatformName());
+                   
                     if (proxy != null)
                         chromeCapabilities.setCapability(CapabilityType.PROXY, proxy);
-
-                    driver = new RemoteWebDriver(hubURL, chromeCapabilities);
+                    System.setProperty("webdriver.http.factory", "jdk-http-client");
+                    driver = new ChromeDriver(opt);
                 }
             } else if ("iexplorer".equalsIgnoreCase(browser)) {
                 ieCapabilities.setCapability("enablePersistentHover", false);
@@ -414,8 +451,7 @@ public class WebDriverFactory {
 
                 if (proxy != null)
                     ieCapabilities.setCapability(CapabilityType.PROXY, proxy);
-
-                driver = new RemoteWebDriver(hubURL, ieCapabilities);
+                 driver = new InternetExplorerDriver();
             } else if ("edge".equalsIgnoreCase(browser)) {
                 edgeCapabilities.setPlatform(Platform.fromString(platform));
                 driver = new RemoteWebDriver(hubURL, edgeCapabilities);
@@ -451,9 +487,9 @@ public class WebDriverFactory {
                 synchronized (WebDriverFactory.class) {
                     firefoxCapabilities.setCapability("unexpectedAlertBehaviour", "ignore");
                     firefoxCapabilities.setPlatform(Platform.fromString(platform));
-                    driver = new RemoteWebDriver(hubURL, firefoxCapabilities);
+                    driver = new FirefoxDriver();
                 }
-                driver.manage().timeouts().pageLoadTimeout(maxPageLoadWait, TimeUnit.SECONDS);
+                driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(maxPageLoadWait));
             }
             Assert.assertNotNull(driver,
                     "Driver did not intialize...\n Please check if hub is running / configuration settings are corect.");

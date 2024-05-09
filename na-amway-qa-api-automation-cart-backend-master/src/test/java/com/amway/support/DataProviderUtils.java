@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
-import static  com.amway.tdata.TData.SheetName;
-
+import static com.amway.tdata.TData.SheetName;
 
 public class DataProviderUtils {
 	private static EnvironmentPropertiesReader configProperty = EnvironmentPropertiesReader.getInstance();
@@ -132,8 +131,6 @@ public class DataProviderUtils {
 		return dataToBeReturned.iterator();
 
 	}// multiDataIterator
-	
-
 
 	/**
 	 * Utility method to get the file content in UTF8
@@ -159,23 +156,22 @@ public class DataProviderUtils {
 		}
 		return lines;
 	}
-	
-	
-	@DataProvider(name="APIData",parallel = true)
+
+	@DataProvider(name = "APIData", parallel = true)
 	public static Object[][] getRequestData(Method m) throws IOException {
 
-		String sheetName="";		
-		String[] fName=m.getName().split("API");
-		
-		if(m.getName().toLowerCase().contains(SheetName.PAYMENT_SHEET))
-		{
-			sheetName=fName[1].toLowerCase();
+		String sheetName = "";
+		String[] fName = m.getName().split("API");
+
+		if (m.getName().toLowerCase().contains(SheetName.PAYMENT_SHEET)) {
+			sheetName = fName[1].toLowerCase();
 		}
-		String fileName=System.getProperty("user.dir").replace("/target","")+ "\\src\\main\\resources\\testdata\\data\\AamwayAPIData.xlsx" ;
-		fileName=fileName.replace("\\", File.separator);
+
+		String fileName = System.getProperty("user.dir").replace("/target", "")
+				+ "\\src\\main\\resources\\testdata\\data\\AamwayAPIData.xlsx";
+		fileName = fileName.replace("\\", File.separator);
 		Object[][] data = ReadFromExcel.getExcelData_API(fileName, sheetName, m.getName());
 		return data;
 	}
-	
 
 }

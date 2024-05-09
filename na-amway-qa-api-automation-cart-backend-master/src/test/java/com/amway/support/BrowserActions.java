@@ -1,5 +1,6 @@
 package com.amway.support;
 
+import java.time.Duration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -529,16 +530,14 @@ public class BrowserActions {
 			String locator) {
 		List<WebElement> elements = null;
 		if (locator.startsWith("//")) {
-			elements = (new WebDriverWait(driver, 10).pollingEvery(500,
-					TimeUnit.MILLISECONDS).ignoring(
+			elements = (new WebDriverWait(driver, Duration.ofSeconds(10)).pollingEvery( Duration.ofSeconds(500)).ignoring(
 							NoSuchElementException.class,
 							StaleElementReferenceException.class)
 							.withMessage("Couldn't find " + locator))
 							.until(ExpectedConditions
 									.visibilityOfAllElementsLocatedBy(By.xpath(locator)));
 		} else {
-			elements = (new WebDriverWait(driver, 10).pollingEvery(500,
-					TimeUnit.MILLISECONDS).ignoring(
+			elements = (new WebDriverWait(driver,  Duration.ofSeconds(10)).pollingEvery( Duration.ofSeconds(500)).ignoring(
 							NoSuchElementException.class,
 							StaleElementReferenceException.class)
 							.withMessage("Couldn't find " + locator))
@@ -560,16 +559,14 @@ public class BrowserActions {
 
 		WebElement element = null;
 		if (locator.startsWith("//")) {
-			element = (new WebDriverWait(driver, 10).pollingEvery(500,
-					TimeUnit.MILLISECONDS).ignoring(
+			element = (new WebDriverWait(driver,  Duration.ofSeconds(10)).pollingEvery(Duration.ofSeconds(500)).ignoring(
 							NoSuchElementException.class,
 							StaleElementReferenceException.class)
 							.withMessage("Couldn't find " + locator))
 							.until(ExpectedConditions.visibilityOfElementLocated(By
 									.xpath(locator)));
 		} else {
-			element = (new WebDriverWait(driver, 10).pollingEvery(500,
-					TimeUnit.MILLISECONDS).ignoring(
+			element = (new WebDriverWait(driver,  Duration.ofSeconds(10)).pollingEvery(Duration.ofSeconds(500)).ignoring(
 							NoSuchElementException.class,
 							StaleElementReferenceException.class)
 							.withMessage("Couldn't find " + locator))

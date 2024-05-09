@@ -173,7 +173,7 @@ public class Log {
 		if (params == null || params.length == 0) {
 			params = new Object[1];
 		}
-		params[0] = testMachine + ", " + ((RemoteWebDriver) driver).getCapabilities().getBrowserName() + "_" + ((RemoteWebDriver) driver).getCapabilities().getPlatform();
+		params[0] = testMachine + ", " + ((RemoteWebDriver) driver).getCapabilities().getBrowserName() + "_" + ((RemoteWebDriver) driver).getCapabilities().getPlatformName();
 		Reporter.getCurrentTestResult().setParameters(params);
 		ExtentReporter.addAttribute(params[0].toString());
 	}

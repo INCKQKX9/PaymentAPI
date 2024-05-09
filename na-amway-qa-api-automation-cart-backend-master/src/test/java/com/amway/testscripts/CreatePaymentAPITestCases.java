@@ -1,27 +1,36 @@
 package com.amway.testscripts;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import com.amway.api.utilities.CreatePaymentUtility;
+import com.amway.pages.CreditCardPage;
 import com.amway.pojo.response.CreatePaymentResponseDTO;
 import com.amway.support.DataProviderUtils;
 import com.amway.support.EmailReport;
 import com.amway.support.Log;
 import com.amway.support.RestAssuredAPI;
 import com.amway.support.Utils;
+import com.amway.support.WebDriverFactory;
 import com.amway.tdata.TData.Payment;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 
 @Listeners(EmailReport.class)
 public class CreatePaymentAPITestCases extends RestAssuredAPI {
 
 	@Test(enabled = true, description = "Testcase to verify the create payment api for payment for credit card", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
-	public void tcAmwayAPICreatePayment(String refId, String refType, String currency, String amount,
-			String paymentMethodProviderId, String paymentMethodCode, String entryType) throws Exception {
+	public void tcAmwayAPICreditCardCreatePayment(String refType, String currency, String amount,
+			String paymentMethodProviderId, String paymentMethodCode, String entryType, String accountId,
+			String profileId) throws Exception {
 		boolean result = false;
 
 		try {
@@ -30,14 +39,36 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 			Log.message("<b>==========================================================</b>");
 			Log.message("<i><b>   Validation for create_payment_API  Started" + "</b></i>");
 			Log.message("<b>==========================================================</b>");
-
+			String refId = String.valueOf(Utils.getRandom(1000, 100000));
 			CreatePaymentUtility createPaymentUtilityObj = new CreatePaymentUtility();
 			Response response = createPaymentUtilityObj.performCreatePayment(refId, refType, currency,
-					Integer.parseInt(amount), paymentMethodProviderId, paymentMethodCode, entryType);
+					Integer.parseInt(amount), paymentMethodProviderId, paymentMethodCode, entryType, accountId,
+					profileId);
 
 			int actualResultStatusCode = response.statusCode();
 			Log.assertThat(actualResultStatusCode == 200, "Status code is return as 200.",
 					"Status Code is return as not 200, Actual result : " + actualResultStatusCode);
+			if (actualResultStatusCode == 200) {
+
+				String websiteUrl = "https://sandbox-pgw-ui.2c2p.com/payment/4.1/amwaycheckout/#/token/kSAops9Zwhos8hSTSeLTUVpsvKvrkhNsKulpLFciXLGSTTzCwdoIZZQKof6uKt23QOJOfEIy1c45jKMV0%2fhINMHNZhNyxzdEOw3GA9yTvyOzTJxgBO37OOO%2fhwijC4yi";
+
+				String browser = "chrome_Windows";
+				final WebDriver driver = WebDriverFactory.get(browser);
+
+				/*
+				 * ChromeOptions chromeOptions = new ChromeOptions();
+				 * 
+				 * 
+				 * WebDriverManager.chromedriver().setup(); WebDriver driver = new
+				 * ChromeDriver(chromeOptions); driver.get(websiteUrl);
+				 */
+
+				CreditCardPage cardPage = new CreditCardPage(driver, websiteUrl).get();
+				cardPage.enterCreditCardDetails();
+				cardPage.enterOtp();
+
+				driver.close();
+			}
 
 		}
 
@@ -112,9 +143,9 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 									+ actualResultStatusCode);
 					String transStatus = createPaymentResponseDTO.getTransactions().get(0).getStatus();
 
-					Log.assertThat(transStatus.equals("AUTHORIZED"),
-							"transaction Status is AUTHORIZED. for create payment.",
-							"Status is not AUTHORIZED, Actual result : " + transStatus);
+					Log.assertThat(transStatus.equals("CAPTURED"),
+							"transaction Status is CAPTURED. for create payment.",
+							"Status is not CAPTURED, Actual result : " + transStatus);
 
 					Log.assertThat(
 							createPaymentResponseDTO.paymentId != null && !createPaymentResponseDTO.paymentId.isEmpty(),
@@ -193,13 +224,14 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 									+ actualResultStatusCode);
 					String transStatus = createPaymentResponseDTO.getTransactions().get(0).getStatus();
 
-					Log.assertThat(transStatus.equals("AUTHORIZED"),
-							"transaction Status is AUTHORIZED. for create payment credit voucher",
-							"Status is not AUTHORIZED for credit voucher, Actual result : " + transStatus);
+					Log.assertThat(transStatus.equals("CAPTURED"),
+							"transaction Status is CAPTURED. for create payment credit voucher",
+							"Status is not CAPTURED for credit voucher, Actual result : " + transStatus);
 
 					Log.assertThat(
 							createPaymentResponseDTO.paymentId != null && !createPaymentResponseDTO.paymentId.isEmpty(),
-							"Payment Id created successfully  for credit voucher", "Payment id has not generated for credit voucher.");
+							"Payment Id created successfully  for credit voucher",
+							"Payment id has not generated for credit voucher.");
 
 				}
 
@@ -213,6 +245,165 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 		finally {
 			Log.endTestCase();
 		} // finally
+	}
+
+	@Test(enabled = true, description = "Testcase to verify the create payement api for Ampoints", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
+	public void tcAmwayAPIAmpointsCreatePayment(String refType, String currency, String amount,
+			String paymentMethodProviderId, String paymentMethodCode, String entryType, String accountId,
+			String profileId) throws Exception {
+		boolean result = false;
+		Integer callStatus = 0;
+
+		try {
+
+			RestAssuredAPI rp = new RestAssuredAPI();
+
+			Log.message("<b>==========================================================</b>");
+			Log.message("<i><b>   Validation for create payment from Ampoints  Started" + "</b></i>");
+			Log.message("<b>==========================================================</b>");
+
+			CreatePaymentUtility createPaymentUtilityObj = new CreatePaymentUtility();
+			Response getResponse = createPaymentUtilityObj.performGetBalAmpoints(accountId);
+
+			String res = getResponse.asString();
+			io.restassured.path.json.JsonPath js = new io.restassured.path.json.JsonPath(res);
+			callStatus = getResponse.statusCode();
+			Log.assertThat(callStatus == 200, "Status code is return as 200.",
+					"Status Code is return as not 200, Actual result : " + callStatus);
+			if (callStatus == 200) {
+
+				Float availablePoints = js.get("availablePoints");
+
+				System.out
+						.println("-------------------Current Available Balance--------------------" + availablePoints);
+
+				if (availablePoints == 0 || availablePoints < Integer.parseInt(amount)) {
+
+					System.out.println("--------------------------NO/Low Balance Available---------------------------");
+					Log.message("<i><b>   call Api to add balance  Started" + "</b></i>");
+
+					String rfid = String.valueOf(Utils.getRandom(1000, 100000));
+					Response addBalresponse = createPaymentUtilityObj.performAddBalanceAmpoints(accountId,
+							Payment.ENTRY_TYPE_CREDIT_BALANCE, Payment.AMPOINTS_POINTS, rfid);
+					callStatus = addBalresponse.statusCode();
+
+					Log.assertThat(callStatus == 200, "Status code is return as 200.",
+							"Status Code is return as not 200, Actual result : " + callStatus);
+
+				}
+
+				// create payment
+
+				if (callStatus == 200) {
+					String rfidCreate = String.valueOf(Utils.getRandom(1000, 100000));
+					Response response = createPaymentUtilityObj.performWalletCreatePayment(rfidCreate, refType,
+							currency, Integer.parseInt(amount), paymentMethodProviderId, paymentMethodCode, entryType,
+							accountId, profileId);
+					CreatePaymentResponseDTO createPaymentResponseDTO = response.as(CreatePaymentResponseDTO.class);
+					int actualResultStatusCode = response.statusCode();
+					Log.assertThat(actualResultStatusCode == 200,
+							"Create Payment for Credit voucher executed successfully as code is return as 200.",
+							"Status Code is return as not 200 for create payment, Actual result : "
+									+ actualResultStatusCode);
+					String transStatus = createPaymentResponseDTO.getTransactions().get(0).getStatus();
+
+					Log.assertThat(transStatus.equals("CAPTURED"),
+							"transaction Status is CAPTURED. for create payment credit voucher",
+							"Status is not CAPTURED for Ampoints, Actual result : " + transStatus);
+
+					Log.assertThat(
+							createPaymentResponseDTO.paymentId != null && !createPaymentResponseDTO.paymentId.isEmpty(),
+							"Payment Id created successfully  for credit voucher",
+							"Payment id has not generated for credit voucher.");
+
+				}
+
+			}
+
+		}
+
+		catch (Exception e) {
+			Log.exception(e);
+		} // catch
+		finally {
+			Log.endTestCase();
+		} // finally
+	}
+
+	@Test(enabled = true, description = "Testcase to verify the create payment api for payment for Pay at Shop", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
+	public void tcAmwayAPIPayatShopCreatePayment(String refType, String currency, String amount,
+			String paymentMethodProviderId, String paymentMethodCode, String entryType, String accountId,
+			String profileId) throws Exception {
+		boolean result = false;
+
+		try {
+
+			RestAssuredAPI rp = new RestAssuredAPI();
+			Log.message("<b>==========================================================</b>");
+			Log.message("<i><b>   Validation for create_payment_API  Started" + "</b></i>");
+			Log.message("<b>==========================================================</b>");
+			String refId = String.valueOf(Utils.getRandom(1000, 100000));
+			CreatePaymentUtility createPaymentUtilityObj = new CreatePaymentUtility();
+			Response response = createPaymentUtilityObj.performWalletCreatePayment(refId, refType, currency,
+					Integer.parseInt(amount), paymentMethodProviderId, paymentMethodCode, entryType, accountId,
+					profileId);
+
+			String res = response.asString();
+			io.restassured.path.json.JsonPath js = new io.restassured.path.json.JsonPath(res);
+			int actualResultStatusCode = response.statusCode();
+			Log.assertThat(actualResultStatusCode == 200, "Status code is return as 200.",
+					"Status Code is return as not 200, Actual result : " + actualResultStatusCode);
+			if (actualResultStatusCode == 200) {
+				String status = js.get("status");
+				Log.assertThat(status.equals("AWAITED"), "Status is as AWAITED.",
+						"Status is not as AWAITED, Actual result : " + status);
+
+			}
+
+		}
+
+		catch (Exception e) {
+			Log.exception(e);
+		} // catch
+		finally {
+			Log.endTestCase();
+		} // finally
+	}
+
+	@Test
+	public void chromeTest() throws MalformedURLException {
+
+		// ChromeOptions chromeOptions = new ChromeOptions();
+
+		WebDriverManager.chromedriver().setup();
+		
+		
+		
+		
+
+		//String websiteUrl = "https://sandbox-pgw-ui.2c2p.com/payment/4.1/amwaycheckout/#/token/kSAops9Zwhos8hSTSeLTUVpsvKvrkhNsKulpLFciXLGSTTzCwdoIZZQKof6uKt23QOJOfEIy1c45jKMV0%2fhINMHNZhNyxzdEOw3GA9yTvyOzTJxgBO37OOO%2fhwijC4yi";
+
+		
+		  String browser="chrome_Windows"; 
+		  final WebDriver driver =WebDriverFactory.get(browser);
+		  driver.get("https://www.google.com");
+		 
+
+		// ChromeOptions chromeOptions = new ChromeOptions();
+
+		/*
+		 * WebDriverManager.chromedriver()
+		 * 
+		 * driver.get();
+		 */
+
+		/*
+		 * CreditCardPage cardPage = new CreditCardPage(driver, websiteUrl).get(); try {
+		 * cardPage.enterCreditCardDetails(); cardPage.enterOtp(); } catch (Exception e)
+		 * { // TODO Auto-generated catch block e.printStackTrace(); }
+		 */
+
+		driver.close();
 	}
 
 }

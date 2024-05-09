@@ -4,8 +4,7 @@ package com.amway.pojo.payment;
 
 import java.util.ArrayList;
 
-import com.amway.pojo.request.CreateCartRequestDTO;
-import com.amway.pojo.request.CreateCartRequestDTO.Entry;
+
 
 import lombok.Builder;
 import lombok.Data;

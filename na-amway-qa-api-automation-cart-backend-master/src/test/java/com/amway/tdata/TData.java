@@ -24,6 +24,9 @@ public class TData {
 		public static String SYSTEM="Payment";
 		
 		public static String CREDIT_VOUCHER_ACCOUNT_TYPE="CREDIT_VOUCHER";
+		public static Integer AMPOINTS_POINTS=3000;
+		
+		
 		
 		
 		

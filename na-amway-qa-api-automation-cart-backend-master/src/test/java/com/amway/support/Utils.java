@@ -2,6 +2,7 @@ package com.amway.support;
 
 import java.math.BigDecimal;
 import java.text.Collator;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +59,7 @@ public class Utils {
 	 */
 	public static void waitForPageLoad(final WebDriver driver, int maxWait) {
 		long startTime = StopWatch.startTime();
-		FluentWait<WebDriver> wait = new WebDriverWait(driver, maxWait).pollingEvery(500, TimeUnit.MILLISECONDS)
+		FluentWait<WebDriver> wait = new WebDriverWait(driver,Duration.ofSeconds(maxWait)).pollingEvery(Duration.ofSeconds(500))
 				.ignoring(StaleElementReferenceException.class).withMessage("Page Load Timed Out");
 		try {
 
@@ -99,8 +101,7 @@ public class Utils {
 	 */
 	public static boolean waitUntilElementDisappear(WebDriver driver, final WebElement element) {
 		final boolean isNotDisplayed;
-
-		WebDriverWait wait = (WebDriverWait) new WebDriverWait(driver, WebDriverFactory.maxPageLoadWait);
+		WebDriverWait wait = (WebDriverWait) new WebDriverWait(driver, Duration.ofSeconds(WebDriverFactory.maxPageLoadWait));
 		isNotDisplayed = wait.until(new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver webDriver) {
 				boolean isPresent = false;
@@ -187,7 +188,7 @@ public class Utils {
 	public static boolean waitForElement(WebDriver driver, WebElement element, int maxWait) {
 		boolean statusOfElementToBeReturned = false;
 		long startTime = StopWatch.startTime();
-		WebDriverWait wait = new WebDriverWait(driver, maxWait);
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(maxWait));
 		try {
 			WebElement waitElement = wait.until(ExpectedConditions.visibilityOf(element));
 			if (waitElement.isDisplayed() && waitElement.isEnabled()) {
@@ -412,7 +413,7 @@ public class Utils {
 	public static boolean waitForDisabledElement(WebDriver driver, WebElement element, int maxWait) {
 		boolean statusOfElementToBeReturned = false;
 		long startTime = StopWatch.startTime();
-		WebDriverWait wait = new WebDriverWait(driver, maxWait);
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(maxWait));
 		try {
 			WebElement waitElement = wait.until(ExpectedConditions.visibilityOf(element));
 			if (!waitElement.isEnabled()) {
@@ -485,6 +486,7 @@ public class Utils {
 	 * @return returns true if both the lists are equal, else returns false
 	 */
 
+	@SuppressWarnings("unlikely-arg-type")
 	public static boolean compareTwoLinkedListHashMap(LinkedList<LinkedHashMap<String, String>> expectedList,
 			LinkedList<LinkedHashMap<String, String>> actualList, String[]... noNeed) {
 		int size = expectedList.size();
@@ -508,6 +510,7 @@ public class Utils {
 		return flag;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	public static boolean compareTwoLinkedDoubleListHashMap(LinkedList<LinkedHashMap<String, Double>> expectedList,
 			LinkedList<LinkedHashMap<String, Double>> actualList, String[]... noNeed) {
 		int size = expectedList.size();
@@ -744,7 +747,7 @@ public class Utils {
 	public static boolean waitUntilElementDisappear(WebDriver driver, final WebElement element, int maxWait) {
 		final boolean isNotDisplayed;
 
-		WebDriverWait wait = (WebDriverWait) new WebDriverWait(driver, maxWait);
+		WebDriverWait wait = (WebDriverWait) new WebDriverWait(driver, Duration.ofSeconds(maxWait));
 		isNotDisplayed = wait.until(new ExpectedCondition<Boolean>() {
 			@Override
 			public Boolean apply(WebDriver webDriver) {
@@ -776,21 +779,14 @@ public class Utils {
 	 * @return - random number between 'min to max' or '0 to max'
 	 * @throws Exception
 	 */
-	public static int getRandom(int min, int max)  {
+	public static int getRandom(int min, int max) throws Exception {
 		Random random = new Random();
-		
-		int rand=0;
-		try {
+		int rand;
 		if (min == 0)
 			rand = random.nextInt(max);
 		else
 			rand = ThreadLocalRandom.current().nextInt(min, max);
 
-		}
-		catch(Exception e)
-		{
-			System.out.println(e.getMessage());
-		}
 		return rand;
 	}
 
@@ -842,6 +838,7 @@ public class Utils {
 	 *            the numbers of decimals
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public static float round(double d, int decimalPlace) {
 		return BigDecimal.valueOf(d).setScale(decimalPlace, BigDecimal.ROUND_HALF_UP).floatValue();
 	}
@@ -1505,6 +1502,7 @@ public class Utils {
 		return true;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	public static boolean compareTwoDoubleLinkedListHashMap(LinkedList<LinkedHashMap<String, String>> expectedList,
 			LinkedList<LinkedHashMap<String, String>> actualList, String[]... noNeed) {
 		int size = expectedList.size();
@@ -1601,6 +1599,7 @@ public class Utils {
 	 *            locator
 	 * @return true or false
 	 */
+	@SuppressWarnings("deprecation")
 	public static boolean exists(WebDriver driver, WebElement list) {
 		driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
 		boolean found = false;
@@ -1685,6 +1684,11 @@ public static boolean elementDisplayedAbove(WebDriver driver, final WebElement e
 		System.out.println("elementSecondY" + elementSecondY);
 		
 		return true;
+	}
+
+	public static List<String> listOfData(String str) {
+    String[] dataArray = str.split("\\s*,\\s*");
+    return Arrays.asList(dataArray);
 	}
 	
 }

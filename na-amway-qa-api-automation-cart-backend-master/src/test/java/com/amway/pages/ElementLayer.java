@@ -1,6 +1,7 @@
 package com.amway.pages;
 
 import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -25,11 +26,9 @@ public class ElementLayer {
 	private final WebDriver driver;
 
 	/**
-	 * Constructor class for ElementLayer, here we initializing the driver for
-	 * page
+	 * Constructor class for ElementLayer, here we initializing the driver for page
 	 * 
-	 * @param driver
-	 *            -
+	 * @param driver -
 	 */
 	public ElementLayer(WebDriver driver) {
 		this.driver = driver;
@@ -41,16 +40,12 @@ public class ElementLayer {
 	 * If expected element is present on the current page, add to list of
 	 * value/fields to actualElement list and then compare to expectedElements
 	 * 
-	 * @param expectedElements
-	 *            - expected WebElement values
-	 * @param obj
-	 *            - the page object the elements are on
+	 * @param expectedElements - expected WebElement values
+	 * @param obj              - the page object the elements are on
 	 * @return true if both the lists are equal, else returns false
-	 * @throws Exception
-	 *             - one of 4 possibilities
+	 * @throws Exception - one of 4 possibilities
 	 */
-	public boolean verifyPageElements(List<String> expectedElements, Object obj)
-			throws Exception {
+	public boolean verifyPageElements(List<String> expectedElements, Object obj) throws Exception {
 		List<String> actual_elements = new ArrayList<String>();
 		for (String expEle : expectedElements) {
 			Field f = null;
@@ -59,8 +54,7 @@ public class ElementLayer {
 				f.setAccessible(true);
 			} catch (NoSuchFieldException | SecurityException e1) {
 				throw new Exception(
-						"No such a field present on this page, Please check the expected list values:: "
-								+ expEle);
+						"No such a field present on this page, Please check the expected list values:: " + expEle);
 			}
 			WebElement element = null;
 			try {
@@ -98,16 +92,12 @@ public class ElementLayer {
 	 * If expected element is present on the current page, add to list of
 	 * value/fields to actualElement list and then compare to expectedElements
 	 * 
-	 * @param expectedElements
-	 *            - expected WebElement values
-	 * @param obj
-	 *            - the page object the elements are on
+	 * @param expectedElements - expected WebElement values
+	 * @param obj              - the page object the elements are on
 	 * @return true if both the lists are equal, else returns false
-	 * @throws Exception
-	 *             - one of 4 possibilities
+	 * @throws Exception - one of 4 possibilities
 	 */
-	public boolean verifyPageElementsDisabled(List<String> expectedElements,
-			Object obj) throws Exception {
+	public boolean verifyPageElementsDisabled(List<String> expectedElements, Object obj) throws Exception {
 		List<String> actual_elements = new ArrayList<String>();
 		for (String expEle : expectedElements) {
 			Field f = null;
@@ -116,8 +106,7 @@ public class ElementLayer {
 				f.setAccessible(true);
 			} catch (NoSuchFieldException | SecurityException e1) {
 				throw new Exception(
-						"No such a field present on this page, Please check the expected list values:: "
-								+ expEle);
+						"No such a field present on this page, Please check the expected list values:: " + expEle);
 			}
 			WebElement element = null;
 			try {
@@ -125,8 +114,7 @@ public class ElementLayer {
 			} catch (IllegalArgumentException | IllegalAccessException e1) {
 				Log.exception(e1);
 			}
-			if (Utils.waitForDisabledElement(driver, element,
-					Utils.maxElementWait)) {
+			if (Utils.waitForDisabledElement(driver, element, Utils.maxElementWait)) {
 				actual_elements.add(expEle);
 			}
 		}
@@ -139,16 +127,12 @@ public class ElementLayer {
 	 * If expected element checked/selected on the current page, add to list of
 	 * value/fields to actualElement list and then compare to expectedElements
 	 * 
-	 * @param expectedElements
-	 *            - expected WebElement values
-	 * @param obj
-	 *            - the page object the elements are on
+	 * @param expectedElements - expected WebElement values
+	 * @param obj              - the page object the elements are on
 	 * @return true if both the lists are equal, else returns false
-	 * @throws Exception
-	 *             - one of 4 possibilities
+	 * @throws Exception - one of 4 possibilities
 	 */
-	public boolean verifyPageElementsChecked(List<String> expectedElements,
-			Object obj) throws Exception {
+	public boolean verifyPageElementsChecked(List<String> expectedElements, Object obj) throws Exception {
 		List<String> actual_elements = new ArrayList<String>();
 		for (String expEle : expectedElements) {
 			Field f = null;
@@ -157,8 +141,7 @@ public class ElementLayer {
 				f.setAccessible(true);
 			} catch (NoSuchFieldException | SecurityException e1) {
 				throw new Exception(
-						"No such field present on this page, Please check the expected list values:: "
-								+ expEle);
+						"No such field present on this page, Please check the expected list values:: " + expEle);
 			}
 			WebElement element = null;
 			try {
@@ -166,10 +149,8 @@ public class ElementLayer {
 			} catch (IllegalArgumentException | IllegalAccessException e1) {
 				Log.exception(e1);
 			}
-			(new WebDriverWait(driver, 5).pollingEvery(250,
-					TimeUnit.MILLISECONDS).ignoring(
-					NoSuchElementException.class)
-					.withMessage("Creat an Event mobel box did not open"))
+			(new WebDriverWait(driver, Duration.ofMinutes(5)).pollingEvery(Duration.ofMillis(250))
+					.ignoring(NoSuchElementException.class).withMessage("Creat an Event mobel box did not open"))
 					.until(ExpectedConditions.visibilityOf(element));
 			if (element.isSelected()) {
 				actual_elements.add(expEle);
@@ -199,16 +180,12 @@ public class ElementLayer {
 	 * If expected element is NOT present on this current page, add to list of
 	 * value/fields to actualElement list and then compare to expectedElements
 	 * 
-	 * @param expectedNotToSee
-	 *            - expected non-existing WebElement values
-	 * @param obj
-	 *            - the page object the elements should not be on
+	 * @param expectedNotToSee - expected non-existing WebElement values
+	 * @param obj              - the page object the elements should not be on
 	 * @return true if both the lists are equal, else returns false
-	 * @throws Exception
-	 *             - one of 2 possibilities
+	 * @throws Exception - one of 2 possibilities
 	 */
-	public boolean verifyPageElementsDoNotExist(List<String> expectedNotToSee,
-			Object obj) throws Exception {
+	public boolean verifyPageElementsDoNotExist(List<String> expectedNotToSee, Object obj) throws Exception {
 		List<String> nonexisting_elements = new ArrayList<String>();
 		for (String expEle : expectedNotToSee) {
 			Field f = null;
@@ -219,8 +196,7 @@ public class ElementLayer {
 				element = ((WebElement) f.get(obj));
 			} catch (NoSuchFieldException | SecurityException e1) {
 				throw new Exception(
-						"No such field present on this page, Please check the expected list values:: "
-								+ expEle);
+						"No such field present on this page, Please check the expected list values:: " + expEle);
 			}
 			if (!Utils.waitForElement(driver, element)) {
 				nonexisting_elements.add(expEle);
@@ -236,17 +212,13 @@ public class ElementLayer {
 	 * expected list elements present on the current page, add to list of
 	 * value/fields to actualElement list and then compare to expectedElements
 	 * 
-	 * @param expectedElements
-	 *            - expected List WebElement values
-	 * @param obj
-	 *            - the page object the elements are on
+	 * @param expectedElements - expected List WebElement values
+	 * @param obj              - the page object the elements are on
 	 * @return true if both the lists are equal, else returns false
-	 * @throws Exception
-	 *             - one of 5 possibilities
+	 * @throws Exception - one of 5 possibilities
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean verifyPageListElements(List<String> expectedElements,
-			Object obj) throws Exception {
+	public boolean verifyPageListElements(List<String> expectedElements, Object obj) throws Exception {
 		List<String> actual_elements = new ArrayList<String>();
 		for (String expEle : expectedElements) {
 			Field f = null;
@@ -255,18 +227,15 @@ public class ElementLayer {
 				f.setAccessible(true);
 			} catch (NoSuchFieldException | SecurityException e1) {
 				throw new Exception(
-						"No such fields present on this page, Please check the expected list values:: "
-								+ expEle);
+						"No such fields present on this page, Please check the expected list values:: " + expEle);
 			}
 			List<WebElement> elements = null;
 			try {
 				elements = ((List<WebElement>) f.get(obj));
-			} catch (ClassCastException | IllegalArgumentException
-					| IllegalAccessException e1) {
+			} catch (ClassCastException | IllegalArgumentException | IllegalAccessException e1) {
 				Log.exception(e1);
 			}
-			if (elements.size() > 0
-					&& Utils.waitForElement(driver, elements.get(0))) {
+			if (elements.size() > 0 && Utils.waitForElement(driver, elements.get(0))) {
 				actual_elements.add(expEle);
 			}
 		}
@@ -279,17 +248,13 @@ public class ElementLayer {
 	 * If expected element is NOT present on this current page, add to list of
 	 * value/fields to actualElement list and then compare to expectedElements
 	 * 
-	 * @param expectedNotToSee
-	 *            - expected non-existing WebElement values
-	 * @param obj
-	 *            - the page object the elements should not be on
+	 * @param expectedNotToSee - expected non-existing WebElement values
+	 * @param obj              - the page object the elements should not be on
 	 * @return true if both the lists are equal, else returns false
-	 * @throws Exception
-	 *             - one of 2 possibilities
+	 * @throws Exception - one of 2 possibilities
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean verifyPageListElementsDoNotExist(
-			List<String> expectedNotToSee, Object obj) throws Exception {
+	public boolean verifyPageListElementsDoNotExist(List<String> expectedNotToSee, Object obj) throws Exception {
 		List<String> actual_elements = new ArrayList<String>();
 		for (String expEle : expectedNotToSee) {
 			Field f = null;
@@ -298,14 +263,12 @@ public class ElementLayer {
 				f.setAccessible(true);
 			} catch (NoSuchFieldException | SecurityException e1) {
 				throw new Exception(
-						"No such fields present on this page, Please check the expected list values:: "
-								+ expEle);
+						"No such fields present on this page, Please check the expected list values:: " + expEle);
 			}
 			List<WebElement> elements = null;
 			try {
 				elements = ((List<WebElement>) f.get(obj));
-			} catch (ClassCastException | IllegalArgumentException
-					| IllegalAccessException e1) {
+			} catch (ClassCastException | IllegalArgumentException | IllegalAccessException e1) {
 				Log.exception(e1);
 			}
 			if (elements.size() == 0) {
@@ -314,7 +277,5 @@ public class ElementLayer {
 		}
 		return Utils.compareTwoList(expectedNotToSee, actual_elements);
 	}
-	
-
 
 }// ELEMENT LAYER

@@ -21,7 +21,7 @@ import com.amway.tdata.TData.Payment;
 import io.restassured.response.Response;
 
 @Listeners(EmailReport.class)
-public class CreatePaymentAPITestCases extends RestAssuredAPI {
+public class CreatePaymentAPIForMemberTestCases extends RestAssuredAPI {
 
 	@Test(enabled = true, description = "Testcase to verify the create payment api for payment for credit card", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
 
@@ -218,7 +218,7 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 	}
 
 
-	@Test(enabled = true, description = "Testcase to verify the create payement api for ampurse", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
+	@Test(enabled = false, description = "Testcase to verify the create payement api for ampurse", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
 	public void tcAmwayAPIAmpurseCreatePayment(String refType, String currency, String amount,
 			String paymentMethodProviderId, String paymentMethodCode, String entryType, String accountId,
 			String profileId) throws Exception {
@@ -303,7 +303,7 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 		} // finally
 	}
 
-	@Test(enabled = true, description = "Testcase to verify the create payement api for Credit Voucher", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
+	@Test(enabled = false, description = "Testcase to verify the create payement api for Credit Voucher", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
 	public void tcAmwayAPICreditVoucherCreatePayment(String refType, String currency, String amount,
 			String paymentMethodProviderId, String paymentMethodCode, String entryType, String accountId,
 			String profileId) throws Exception {
@@ -354,7 +354,7 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 					Response response = createPaymentUtilityObj.performWalletCreatePayment(rfidCreate, refType,
 							currency, Integer.parseInt(amount), paymentMethodProviderId, paymentMethodCode, entryType,
 							accountId, profileId);
-					CreatePaymentExternalResponseDTO createPaymentResponseDTO = response.as(CreatePaymentExternalResponseDTO.class);
+					CreatePaymentResponseDTO createPaymentResponseDTO = response.as(CreatePaymentResponseDTO.class);
 					int actualResultStatusCode = response.statusCode();
 					Log.assertThat(actualResultStatusCode == 200,
 							"Create Payment for Credit voucher executed successfully as code is return as 200.",
@@ -385,7 +385,7 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 		} // finally
 	}
 
-	@Test(enabled = true, description = "Testcase to verify the create payement api for Ampoints", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
+	@Test(enabled = false, description = "Testcase to verify the create payement api for Ampoints", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
 	public void tcAmwayAPIAmpointsCreatePayment(String refType, String currency, String amount,
 			String paymentMethodProviderId, String paymentMethodCode, String entryType, String accountId,
 			String profileId) throws Exception {
@@ -437,7 +437,7 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 					Response response = createPaymentUtilityObj.performWalletCreatePayment(rfidCreate, refType,
 							currency, Integer.parseInt(amount), paymentMethodProviderId, paymentMethodCode, entryType,
 							accountId, profileId);
-					CreatePaymentExternalResponseDTO createPaymentResponseDTO = response.as(CreatePaymentExternalResponseDTO.class);
+					CreatePaymentResponseDTO createPaymentResponseDTO = response.as(CreatePaymentResponseDTO.class);
 					int actualResultStatusCode = response.statusCode();
 					Log.assertThat(actualResultStatusCode == 200,
 							"Create Payment for Credit voucher executed successfully as code is return as 200.",
@@ -468,7 +468,7 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 		} // finally
 	}
 
-	@Test(enabled = true, description = "Testcase to verify the create payment api for payment for Pay at Shop", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
+	@Test(enabled = false, description = "Testcase to verify the create payment api for payment for Pay at Shop", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
 	public void tcAmwayAPIPayatShopCreatePayment(String refType, String currency, String amount,
 			String paymentMethodProviderId, String paymentMethodCode, String entryType, String accountId,
 			String profileId) throws Exception {

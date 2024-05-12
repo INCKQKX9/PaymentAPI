@@ -111,17 +111,6 @@ public class HomePage extends LoadableComponent<HomePage> {
 		return flag;
 	}
 	
-	public CartPage CartTest()
-	{
-		cartIcon.click();	
-		return new CartPage();	
-	}
-	
-	public CartPage AddItems() throws InterruptedException
-	{
-		AddToCart.get(1).click();
-		return new CartPage();
-	}
 	
 
 

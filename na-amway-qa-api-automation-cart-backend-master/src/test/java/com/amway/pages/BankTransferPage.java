@@ -1,16 +1,7 @@
-
 package com.amway.pages;
 
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.awt.event.KeyEvent;
-import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -19,16 +10,11 @@ import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.openqa.selenium.support.pagefactory.ElementLocatorFactory;
 import org.openqa.selenium.support.ui.LoadableComponent;
 import org.testng.Assert;
-import com.amway.support.BrowserActions;
 import com.amway.support.Log;
 import com.amway.support.TestDataPropertiesReader;
 import com.amway.support.Utils;
-import com.eviware.soapui.impl.wsdl.teststeps.SetWaitTimeAction;
 
-import bsh.util.Util;
-import hermes.browser.actions.BrowserAction;
-
-public class CreditCardPage extends LoadableComponent<CreditCardPage> {
+public class BankTransferPage extends LoadableComponent<BankTransferPage> {
 
 	private String appURL;
 	private WebDriver driver;
@@ -58,7 +44,7 @@ public class CreditCardPage extends LoadableComponent<CreditCardPage> {
 
 	@FindBy(xpath = "//button[@type='submit']")
 	WebElement payNowButton;
-
+	
 	@FindBy(xpath = "//*[@name='challengeDataEntry']")
 	WebElement creditCardOtp;
 	
@@ -67,9 +53,6 @@ public class CreditCardPage extends LoadableComponent<CreditCardPage> {
 	
 	@FindBy(xpath = "//*[text()='CAPTURED']")
 	WebElement capturedStatus;
-	
-	@FindBy(xpath = "//*[text()='Something went wrong']")
-	WebElement somthingWentStatus;
 	
 	@FindBy(xpath = "//iframe[@id='pgw-ui-container-dialog-iframe']")
 	WebElement paymentGatewayIframe;
@@ -97,7 +80,7 @@ public class CreditCardPage extends LoadableComponent<CreditCardPage> {
 	 * 
 	 * @param url    : UAT URL
 	 */
-	public CreditCardPage(WebDriver driver, String url) {
+	public BankTransferPage(WebDriver driver, String url) {
 		appURL = url;
 		this.driver = driver;
 		ElementLocatorFactory finder = new AjaxElementLocatorFactory(driver, Utils.maxElementWait);
@@ -108,7 +91,7 @@ public class CreditCardPage extends LoadableComponent<CreditCardPage> {
 	 * 
 	 * @param driver : webdriver
 	 */
-	public CreditCardPage(WebDriver driver) {
+	public BankTransferPage(WebDriver driver) {
 		this.driver = driver;
 		ElementLocatorFactory finder = new AjaxElementLocatorFactory(driver, Utils.maxElementWait);
 		PageFactory.initElements(finder, this);
@@ -123,7 +106,7 @@ public class CreditCardPage extends LoadableComponent<CreditCardPage> {
 		}
 		driver.manage().deleteAllCookies();
 //		closeHeathSalesPopUp();
-		if (isPageLoaded && !(Utils.waitForElement(driver, amwayLogo))) {
+		if (isPageLoaded && !(Utils.waitForElement(driver, confirmPayment))) {
 			Log.fail("Home Page did not open up. Site might be down.", driver);
 		} else {
 			Log.pass("Home Page is Loaded as Expected", driver);
@@ -150,7 +133,7 @@ public class CreditCardPage extends LoadableComponent<CreditCardPage> {
 			Thread.sleep(1500);
 			expiryYear.sendKeys("12/24");
 			//cardCvv.sendKeys("123");
-			cardName.sendKeys("kul");
+			cardName.sendKeys("Abdul");
 			if(payNowButton.isEnabled())
 			{
 				Thread.sleep(1500);
@@ -173,15 +156,12 @@ public class CreditCardPage extends LoadableComponent<CreditCardPage> {
 			submitOtpButton.click();
 			
 		}
-		// check api status is CAPTURED OR NOT
+		Utils.waitForElement(driver, capturedStatus, 100);
+		if(capturedStatus.isDisplayed())
+		{
+			Log.message("Captured status is displayed");
+		}
 		
-		  Utils.waitForElement(driver, somthingWentStatus, 100);
-		  if(somthingWentStatus.isDisplayed()) {
-		  Log.message("Captured status is displayed"); }
-		 
-//		  Utils.waitForElement(driver, , 100);
-//		  if(capturedStatus.isDisplayed()) {
-//		  Log.message("Captured status is displayed"); }
 		
 	}
 	

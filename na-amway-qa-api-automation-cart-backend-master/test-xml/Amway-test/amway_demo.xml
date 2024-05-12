@@ -14,10 +14,11 @@
 		<classes>
 			<class name="com.amway.testscripts.CreatePaymentAPITestCases">
 				<methods>
-					<!--<include name="tcAmwayAPI_CreatePayment"/>-->
-					<!--<include name="tcAmwayAPIAmpurseCreatePayment"/>-->
-				<!--	<include name="tcAmwayAPIPayatShopCreatePayment"/>-->
-					<include name="tcAmwayAPICreditCardCreatePayment"/>
+				
+					<!--<include name="tcAmwayAPI_CreatePayment"/>
+					<include name="tcAmwayAPIAmpurseCreatePayment"/>
+						<include name="tcAmwayAPIPayatShopCreatePayment"/>-->
+					<include name="tcAmwayAPIPayatShopCreatePayment"/>
 					
 				</methods>
 			</class>

@@ -34,6 +34,7 @@ public class BaseTest {
 	public static String Author = "";
 	public static String Category = "";
 	public static String environment = "QA";
+	public static String browser;
 
 	@BeforeMethod(alwaysRun = true)
 	public void beforeMethod() {
@@ -55,6 +56,7 @@ public class BaseTest {
 				: EnvironmentPropertiesReader.loadProperties(context.getCurrentXmlTest().getParameter("configFile")));
 		webSite = (System.getProperty("environment") != null ? System.getProperty("environment")
 				: context.getCurrentXmlTest().getParameter("environment"));
+		browser=context.getCurrentXmlTest().getParameter("browserName");
 	}
 
 	@BeforeSuite(alwaysRun = true)

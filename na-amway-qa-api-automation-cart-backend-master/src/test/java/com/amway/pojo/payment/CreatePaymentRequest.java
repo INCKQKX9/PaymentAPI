@@ -38,6 +38,7 @@ public class CreatePaymentRequest {
 	    	@NonNull
 	        public String entryType;
 	        public Payload payload;
+	        public String status;
 	    }
 	    @Data
 	    @Builder

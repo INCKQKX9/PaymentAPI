@@ -57,11 +57,17 @@ public class BankTransferPage extends LoadableComponent<BankTransferPage> {
 	@FindBy(xpath = "//iframe[@id='pgw-ui-container-dialog-iframe']")
 	WebElement paymentGatewayIframe;
 	
-	@FindBy(xpath = "//button[@class='btn btn-primary']")
-	WebElement confirmPayment;
+	/*
+	 * @FindBy(xpath = "//button[@class='btn btn-primary']") WebElement
+	 * confirmPayment;
+	 */
 	
-	@FindBy(xpath = "//div[@aria-hidden='true']")
-	List<WebElement> selectBank;
+	@FindBy(xpath = "//button[text()='Pay Now']") 
+	WebElement toPay;
+	
+	@FindBy(xpath = "//div[contains(@class,'select__dropdown-indicator')]")
+	//List<WebElement> selectBank;
+	WebElement selectBank;
 	
 	@FindBy(xpath = "//*[contains(text(),'The Siam Commercial Bank')]")
 	WebElement selectSiamBank;
@@ -106,7 +112,7 @@ public class BankTransferPage extends LoadableComponent<BankTransferPage> {
 		}
 		driver.manage().deleteAllCookies();
 //		closeHeathSalesPopUp();
-		if (isPageLoaded && !(Utils.waitForElement(driver, confirmPayment))) {
+		if (isPageLoaded && !(Utils.waitForElement(driver, toPay))) {
 			Log.fail("Home Page did not open up. Site might be down.", driver);
 		} else {
 			Log.pass("Home Page is Loaded as Expected", driver);
@@ -170,10 +176,10 @@ public class BankTransferPage extends LoadableComponent<BankTransferPage> {
 		int size = driver.findElements(By.tagName("iframe")).size();
 		System.out.println("total no. of Frames : " + size);
 		//driver.switchTo().frame("pgw-ui-container-dialog-iframe");
-		Utils.waitForElement(driver, confirmPayment, 10);
-		selectBank.get(1).click();
+		Utils.waitForElement(driver, toPay, 10);
+		selectBank.click();
 		selectSiamBank.click();
-		confirmPayment.click();
+		toPay.click();
 		Utils.waitForElement(driver, paymentSubmit, 50);
 		paymentSubmit.click();
 		

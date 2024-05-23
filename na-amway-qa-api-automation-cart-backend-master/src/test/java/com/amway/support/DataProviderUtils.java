@@ -168,7 +168,7 @@ public class DataProviderUtils {
 		}
 
 		String fileName = System.getProperty("user.dir").replace("/target", "")
-				+ "\\src\\main\\resources\\testdata\\data\\AamwayAPIData.xlsx";
+				+ "\\src\\main\\resources\\testdata\\data\\AamwayAPIDataMember.xlsx";
 		fileName = fileName.replace("\\", File.separator);
 		Object[][] data = ReadFromExcel.getExcelData_API(fileName, sheetName, m.getName());
 		return data;

@@ -121,7 +121,8 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 
 				final WebDriver driver = WebDriverFactory.get(browser);
 
-				 BankTransferPage btransfer = new BankTransferPage(driver, websiteUrl).get();
+				 BankTransferPage btransfer = new BankTransferPage(driver);
+				 driver.get(websiteUrl);
 				 btransfer.bankTranser();
 				
 
@@ -154,7 +155,7 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 	}
 	
 
-	@Test(enabled = true, description = "Testcase to verify the create payment api for Online Bank Transfer", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
+	@Test(enabled = true, description = "Testcase to verify the create payment using split method", dataProviderClass = DataProviderUtils.class, dataProvider = "APIData")
 
 	public void tcAmwayAPISplitAmpurseOBTCreatePayment(String refType, String currency, String totalAmount,String accountId,
 			String profileId,String obtPaymentMethodProviderId, String obtPaymentMethodCode, String obtEntryType,String obtAmount,String ampursePaymentMethodProviderId, String ampursePaymentMethodCode, String ampurseEntryType,String ampurseAmount ) throws Exception {
@@ -164,7 +165,7 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 
  			RestAssuredAPI rp = new RestAssuredAPI();
 			Log.message("<b>==========================================================</b>");
-			Log.message("<i><b>   Validation for create_payment_API using Online Bank Transfer" + "</b></i>");
+			Log.message("<i><b>   Validation for create_payment_API using split payment" + "</b></i>");
 			Log.message("<b>==========================================================</b>");
 			String refId = String.valueOf(Utils.getRandom(1000, 100000));
 			CreatePaymentUtility createPaymentUtilityObj = new CreatePaymentUtility();
@@ -185,7 +186,8 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 
 				final WebDriver driver = WebDriverFactory.get(browser);
 
-				 BankTransferPage btransfer = new BankTransferPage(driver, websiteUrl).get();
+				 BankTransferPage btransfer = new BankTransferPage(driver);
+				 driver.get(websiteUrl);
 				 btransfer.bankTranser();
 				
 
@@ -245,8 +247,12 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 			Log.assertThat(callStatus == 200, "Get Balance Executed Successfully as status code return as 200.",
 					"Status Code is return as not 200, Actual result : " + callStatus);
 			if (callStatus == 200) {
-				ArrayList<Integer> ab = js.get("availableBalance");
-				Integer balance = (Integer) ab.get(0);
+				String  ab = js.get("availableBalance").toString().replaceAll("\\[|\\]", "");
+				Float balance = Float.parseFloat(ab);
+//				String balance = ab.get(0).toString();
+//				Double balance = Double.parseDouble(s);
+
+//				Double balance =  ab.get(0);
 
 				System.out.println("-------------------Current Available Balance--------------------" + balance);
 
@@ -273,7 +279,7 @@ public class CreatePaymentAPITestCases extends RestAssuredAPI {
 							currency, Integer.parseInt(amount), paymentMethodProviderId, paymentMethodCode, entryType,
 							accountId, profileId);
 
-					CreatePaymentResponseDTO createPaymentResponseDTO = response.as(CreatePaymentResponseDTO.class);
+					CreatePaymentExternalResponseDTO createPaymentResponseDTO = response.as(CreatePaymentExternalResponseDTO.class);
 					int actualResultStatusCode = response.statusCode();
 					Log.assertThat(actualResultStatusCode == 200,
 							"Create Payment for Ampurse executed successfully as code is return as 200.",

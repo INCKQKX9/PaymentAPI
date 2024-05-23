@@ -12,13 +12,13 @@
 	<parameter name="Website" value="https://global-dev.amcom-corp-preprod.amway.net/comamshopws#"></parameter>
 	<test name="Amway-API-Automation" thread-count="5" parallel="true">
 		<classes>
-			<class name="com.amway.testscripts.CreatePaymentAPITestCases">
+			<class name="com.amway.testscripts.CreatePaymentAPIForMemberTestCases">
 				<methods>
 				
 					<!--<include name="tcAmwayAPI_CreatePayment"/>
 					<include name="tcAmwayAPIAmpurseCreatePayment"/>
 						<include name="tcAmwayAPIPayatShopCreatePayment"/>-->
-					<include name="tcAmwayAPIPayatShopCreatePayment"/>
+					<include name="tcAmwayAPISplitAmpointOBTCreatePayment"/>
 					
 				</methods>
 			</class>

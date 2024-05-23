@@ -35,8 +35,7 @@ public class CreatePaymentUtility extends RestAssuredAPI {
 		CreatePaymentRequest createPaymentDto = CreatePaymentRequest.builder().refId(refId).refType(refType)
 				.amount(Amount.builder().currency(currency).value(value).build())
 				.userInfo(UserInfo.builder().accountId(accountId).profileId(profileId).build())
-				.transactions(createTransaction(paymentMethodProviderId, paymentMethodCode, entryType, value))
-				.build();
+				.transactions(createTransaction(paymentMethodProviderId, paymentMethodCode, entryType, value)).build();
 
 		RequestSpecificationDTO requestSpecificationDTO;
 		try {
@@ -55,15 +54,25 @@ public class CreatePaymentUtility extends RestAssuredAPI {
 			String entryType, Integer value) {
 
 		ArrayList<Transaction> transactions = new ArrayList<>();
+		if(paymentMethodCode.equalsIgnoreCase("AMPOINTS")) {
 		transactions.add(Transaction.builder().paymentMethodProviderId(paymentMethodProviderId)
 				.paymentMethodCode(paymentMethodCode).paymentLocation("").terminalId("").description("string")
 				.amount(Amount.builder().currency("THB").value(value).build())
-				.entry(Entry.builder().entryType(entryType).payload(Payload.builder().tokenize(true).build()).build())
+				.entry(Entry.builder().entryType(entryType).status("SUCCESS").payload(Payload.builder().tokenize(true).build()).build())
 
 				.build()
 
 		);
-		
+		}else {
+			transactions.add(Transaction.builder().paymentMethodProviderId(paymentMethodProviderId)
+					.paymentMethodCode(paymentMethodCode).paymentLocation("").terminalId("").description("string")
+					.amount(Amount.builder().currency("THB").value(value).build())
+					.entry(Entry.builder().entryType(entryType).payload(Payload.builder().tokenize(true).build()).build())
+
+					.build()
+
+			);
+		}
 
 		return transactions;
 
@@ -77,8 +86,7 @@ public class CreatePaymentUtility extends RestAssuredAPI {
 		CreatePaymentRequest createPaymentDto = CreatePaymentRequest.builder().refId(refId).refType(refType)
 				.amount(Amount.builder().currency(currency).value(value).build())
 				.userInfo(UserInfo.builder().accountId(acoountId).profileId(profileId).build())
-				.transactions(createTransaction(paymentMethodProviderId, paymentMethodCode, entryType, value))
-				.build();
+				.transactions(createTransaction(paymentMethodProviderId, paymentMethodCode, entryType, value)).build();
 
 		RequestSpecificationDTO requestSpecificationDTO;
 		Response response = null;
@@ -215,18 +223,24 @@ public class CreatePaymentUtility extends RestAssuredAPI {
 		io.restassured.path.json.JsonPath js = new io.restassured.path.json.JsonPath(resString);
 		return js;
 	}
-	//refId, refType, currency,
-	//Integer.parseInt(totalAmount), obtPaymentMethodProviderId, obtPaymentMethodCode, obtEntryType,ampursePaymentMethodProviderId, amoursePaymentMethodCode, ampurseEntryType, accountId,
-	//profileId,Integer.parseInt(obtAmount),Integer.parseInt(ampurseAmount)
+
+	// refId, refType, currency,
+	// Integer.parseInt(totalAmount), obtPaymentMethodProviderId,
+	// obtPaymentMethodCode, obtEntryType,ampursePaymentMethodProviderId,
+	// amoursePaymentMethodCode, ampurseEntryType, accountId,
+	// profileId,Integer.parseInt(obtAmount),Integer.parseInt(ampurseAmount)
 	public Response performSplitCreatePayment(String refId, String refType, String currency, Integer totalAmount,
-			String obtPaymentMethodProviderId, String obtPaymentMethodCode, String obtEntryType,String ampursePaymentMethodProviderId, String ampursePaymentMethodCode, String ampurseEntryType, String accountId,
-			String profileId,Integer obtAmount,Integer ampurseAmount) throws Exception {
+			String obtPaymentMethodProviderId, String obtPaymentMethodCode, String obtEntryType,
+			String ampursePaymentMethodProviderId, String ampursePaymentMethodCode, String ampurseEntryType,
+			String accountId, String profileId, Integer obtAmount, Integer ampurseAmount) throws Exception {
 		String uri = getURI("createPayment");
 		Response response = null;
 		CreatePaymentRequest createPaymentDto = CreatePaymentRequest.builder().refId(refId).refType(refType)
 				.amount(Amount.builder().currency(currency).value(totalAmount).build())
 				.userInfo(UserInfo.builder().accountId(accountId).profileId(profileId).build())
-				.transactions(createTransactionForSplit(ampursePaymentMethodProviderId, ampursePaymentMethodCode, ampurseEntryType,obtPaymentMethodProviderId, obtPaymentMethodCode, obtEntryType,obtAmount,ampurseAmount))
+				.transactions(createTransactionForSplit(ampursePaymentMethodProviderId, ampursePaymentMethodCode,
+						ampurseEntryType, obtPaymentMethodProviderId, obtPaymentMethodCode, obtEntryType, obtAmount,
+						ampurseAmount))
 				.build();
 
 		RequestSpecificationDTO requestSpecificationDTO;
@@ -241,15 +255,17 @@ public class CreatePaymentUtility extends RestAssuredAPI {
 
 		return response;
 	}
-	public ArrayList<Transaction> createTransactionForSplit(String ampursePaymentMethodProviderId, String ampursePaymentMethodCode,
-			String ampurseEntryType,String obtPaymentMethodProviderId, String obtPaymentMethodCode,
-			String obtEntryType, Integer obtAmount,Integer ampurseAmount) {
+
+	public ArrayList<Transaction> createTransactionForSplit(String ampursePaymentMethodProviderId,
+			String ampursePaymentMethodCode, String ampurseEntryType, String obtPaymentMethodProviderId,
+			String obtPaymentMethodCode, String obtEntryType, Integer obtAmount, Integer ampurseAmount) {
 
 		ArrayList<Transaction> transactions = new ArrayList<>();
 		transactions.add(Transaction.builder().paymentMethodProviderId(ampursePaymentMethodProviderId)
 				.paymentMethodCode(ampursePaymentMethodCode).paymentLocation("").terminalId("").description("string")
 				.amount(Amount.builder().currency("THB").value(ampurseAmount).build())
-				.entry(Entry.builder().entryType(ampurseEntryType).payload(Payload.builder().tokenize(true).build()).build())
+				.entry(Entry.builder().entryType(ampurseEntryType).payload(Payload.builder().tokenize(true).build())
+						.build())
 
 				.build()
 
@@ -257,11 +273,65 @@ public class CreatePaymentUtility extends RestAssuredAPI {
 		transactions.add(Transaction.builder().paymentMethodProviderId(obtPaymentMethodProviderId)
 				.paymentMethodCode(obtPaymentMethodCode).paymentLocation("").terminalId("").description("string")
 				.amount(Amount.builder().currency("THB").value(obtAmount).build())
-				.entry(Entry.builder().entryType(obtEntryType).payload(Payload.builder().tokenize(true).build()).build())
+				.entry(Entry.builder().entryType(obtEntryType).payload(Payload.builder().tokenize(true).build())
+						.build())
 
 				.build()
 
 		);
 		return transactions;
-}
+	}
+
+	public ArrayList<Transaction> createTransactionForSplitMember(String ampointPaymentMethodProviderId,
+			String ampointPaymentMethodCode, String ampointEntryType, String obtPaymentMethodProviderId,
+			String obtPaymentMethodCode, String obtEntryType, Integer obtAmount, Integer ampurseAmount) {
+
+		ArrayList<Transaction> transactions = new ArrayList<>();
+		transactions.add(Transaction.builder().paymentMethodProviderId(ampointPaymentMethodProviderId)
+				.paymentMethodCode(ampointPaymentMethodCode).paymentLocation("").terminalId("").description("string")
+				.amount(Amount.builder().currency("THB").value(ampurseAmount).build())
+				.entry(Entry.builder().entryType(ampointEntryType).status("SUCCESS").payload(Payload.builder().tokenize(true).build())
+						.build())
+
+				.build()
+
+		);
+		transactions.add(Transaction.builder().paymentMethodProviderId(obtPaymentMethodProviderId)
+				.paymentMethodCode(obtPaymentMethodCode).paymentLocation("").terminalId("").description("string")
+				.amount(Amount.builder().currency("THB").value(obtAmount).build())
+				.entry(Entry.builder().entryType(obtEntryType).payload(Payload.builder().tokenize(true).build())
+						.build())
+
+				.build()
+
+		);
+		return transactions;
+	}
+
+	public Response performSplitMemberCreatePayment(String refId, String refType, String currency, Integer totalAmount,
+			String obtPaymentMethodProviderId, String obtPaymentMethodCode, String obtEntryType,
+			String ampointPaymentMethodProviderId, String ampointPaymentMethodCode, String ampointEntryType,
+			String accountId, String profileId, Integer obtAmount, Integer ampurseAmount) throws Exception {
+		String uri = getURI("createPayment");
+		Response response = null;
+		CreatePaymentRequest createPaymentDto = CreatePaymentRequest.builder().refId(refId).refType(refType)
+				.amount(Amount.builder().currency(currency).value(totalAmount).build())
+				.userInfo(UserInfo.builder().accountId(accountId).profileId(profileId).build())
+				.transactions(createTransactionForSplitMember(ampointPaymentMethodProviderId, ampointPaymentMethodCode,
+						ampointEntryType, obtPaymentMethodProviderId, obtPaymentMethodCode, obtEntryType, obtAmount,
+						ampurseAmount))
+				.build();
+
+		RequestSpecificationDTO requestSpecificationDTO;
+		try {
+			requestSpecificationDTO = createRequestSpecificationObject(uri, "POST", setPaymentHeaders(false),
+					createPaymentDto);
+			response = RestAssuredAPI.callAPI(requestSpecificationDTO, null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return response;
+	}
 }
